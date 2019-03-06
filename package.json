@@ -1,0 +1,9 @@
+{
+  "name": "yaff",
+  "version": "1.0.0",
+  "description": "Yet Another Frontend Framework",
+  "main": "main.js",
+  "repository": "git@github.com:lperlaki/yaff.git",
+  "author": "Liam Perlaki <lperlaki@icloud.com>",
+  "license": "MIT"
+}
