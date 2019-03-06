@@ -5,5 +5,9 @@
   "main": "main.js",
   "repository": "git@github.com:lperlaki/yaff.git",
   "author": "Liam Perlaki <lperlaki@icloud.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "parcel": "^1.11.0",
+    "webpack": "^4.29.6"
+  }
 }
