@@ -23,7 +23,7 @@ export class StateWrapper extends HTMLElement {
     }
     watch() {
         if (this.state)
-            this.watcher = this.state.watch(val => this.update(val));
+            this.watcher = this.state.watch(this.update.bind(this));
     }
     constructor(val = '') {
         super();
