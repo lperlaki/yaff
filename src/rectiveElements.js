@@ -30,19 +30,19 @@ export class WrapperElement extends HTMLElement {
         this.state = val
     }
 }
+customElements.define('state-wrapper', WrapperElement);
 
-export class Component extends HTMLElement {
-    constructor(content) {
-        super();
-        const shadowRoot = this.attachShadow({
-            mode: 'open'
-        })
-        shadowRoot.appendChild(content.cloneNode(true))
-    }
-}
+// export class Component extends HTMLElement {
+//     constructor(content) {
+//         super();
+//         const shadowRoot = this.attachShadow({
+//             mode: 'open'
+//         })
+//         shadowRoot.appendChild(content.cloneNode(true))
+//     }
+// }
 
-customElements.define('store-component', Component);
-customElements.define('store-wrapper', WrapperElement);
+// customElements.define('x-component', Component);
 
 export function h(s, ...v) {
     const temp = document.createElement('template');
