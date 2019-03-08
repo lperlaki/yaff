@@ -1,4 +1,4 @@
-export class WrapperElement extends HTMLElement {
+export class StateWrapper extends HTMLElement {
     connectedCallback() {
         this.watch()
     }
@@ -30,7 +30,6 @@ export class WrapperElement extends HTMLElement {
         this.state = val
     }
 }
-customElements.define('state-wrapper', WrapperElement);
 
 // export class Component extends HTMLElement {
 //     constructor(content) {
@@ -44,12 +43,11 @@ customElements.define('state-wrapper', WrapperElement);
 
 // customElements.define('x-component', Component);
 
-export function h(s, ...v) {
-    const temp = document.createElement('template');
-    temp.innerHTML = s.join('<store-wrapper>');
-    const content = document.importNode(temp.content, true);
-    content.querySelectorAll('store-wrapper').forEach((el, i) => {
-        el.state = v[i]
-    })
-    return content
+export function define() {
+    window.customElements.define('state-wrapper', StateWrapper);
+}
+
+if (window) {
+    window.StateWrapper = StateWrapper;
+    define();
 }

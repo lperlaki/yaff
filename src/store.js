@@ -84,7 +84,7 @@ const handler = {
     },
 };
 
-export class Store {
+export default class Store {
     constructor(store) {
         this.self = new Proxy(this, handler)
         this.state = {
@@ -103,4 +103,8 @@ export class Store {
         }
         return this.self
     }
+}
+
+if (window) {
+    window.Store = Store
 }
