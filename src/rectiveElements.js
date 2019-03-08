@@ -41,6 +41,8 @@ export class Component extends HTMLElement {
     }
 }
 
+customElements.define('store-component', Component);
+customElements.define('store-wrapper', WrapperElement);
 
 export function h(s, ...v) {
     const temp = document.createElement('template');

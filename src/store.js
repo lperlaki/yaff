@@ -2,13 +2,22 @@ const handler = {
     ownKeys(target) {
         return [
             ...Reflect.ownKeys(target.state),
+            ...Reflect.ownKeys(target.getters),
             ...Reflect.ownKeys(this.methods),
         ];
     },
-    getOwnPropertyDescriptor(target, prop) {
+    getOwnPropertyDescriptor(target, key) {
+        if (key in target.getters) {
+            return {
+                value: target.getters[key].call(target.self, target.self),
+                writable: true,
+                enumerable: true,
+                configurable: true
+            }
+        }
         return (
-            Reflect.getOwnPropertyDescriptor(target.state, prop) ||
-            Reflect.getOwnPropertyDescriptor(this.methods, prop)
+            Reflect.getOwnPropertyDescriptor(target.state, key) ||
+            Reflect.getOwnPropertyDescriptor(this.methods, key)
         );
     },
     getPrototypeOf(target) {
@@ -29,7 +38,7 @@ const handler = {
                 if (key in target.state)
                     return this.wrap(target.state[key], key, target);
                 else if (key in target.getters)
-                    return this.wrap(target.getters[key].call(target.self), key, target)
+                    return this.wrap(target.getters[key].call(target.self, target.self), key, target)
                 else return undefined;
         }
     },
@@ -66,7 +75,7 @@ const handler = {
         watch: target => (key, fn) => {
             if (!target.watch[key]) target.watch[key] = new Set();
             target.watch[key].add(fn.bind(target.self));
-            fn(target.state[key]);
+            fn(target.self[key]);
             return () => target.watch[key].delete(fn);
         },
         dispatch: target => (key, args) => {
@@ -83,7 +92,6 @@ const handler = {
 
 class Store {
     constructor(store) {
-
         this.state = {
             ...store.state,
         }
@@ -98,24 +106,26 @@ class Store {
         this.actions = {
             ...store.actions,
         }
-
-
         return this.self = new Proxy(this, handler)
     }
 }
 
 
 
+
 const test = new Store({
     state: {
         count: 0
+    },
+    getters: {
+        countN: store => -store.count
     }
 })
 
 test.count.watch(console.log)
 
-console.log(test)
 
+console.log(test)
 
 
 // module.exports = Store;
