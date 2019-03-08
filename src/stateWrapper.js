@@ -48,7 +48,13 @@ export function define() {
         window.customElements.define('state-wrapper', StateWrapper);
 }
 
+export {
+    h
+}
+from './utils';
+
 if (window) {
     window.StateWrapper = StateWrapper;
+    window.h = h
     define();
 }

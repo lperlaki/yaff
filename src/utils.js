@@ -14,11 +14,8 @@ export function h(s, ...v) {
     return content
 }
 
-import {
-    define
-} from './stateWrapper';
+
 if (window) {
-    define();
     window.html = html;
     window.h = h;
 }
