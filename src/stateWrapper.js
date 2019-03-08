@@ -44,7 +44,8 @@ export class StateWrapper extends HTMLElement {
 // customElements.define('x-component', Component);
 
 export function define() {
-    window.customElements.define('state-wrapper', StateWrapper);
+    if (!window.customElements.get('state-wrapper'))
+        window.customElements.define('state-wrapper', StateWrapper);
 }
 
 if (window) {
