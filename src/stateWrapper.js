@@ -6,7 +6,7 @@ export class StateWrapper extends HTMLElement {
         if (this.watcher) this.watcher();
     }
     set state(state) {
-        if (state.hasOwnProperty('store')) {
+        if (store in state) {
             this.stateref = state;
             this.watch()
         } else this.update(state)
