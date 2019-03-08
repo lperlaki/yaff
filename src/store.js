@@ -27,17 +27,20 @@ const handler = {
                 return this.methods.trigger(target);
             default:
                 if (key in target.state)
-                    return this.wrap(target.state[key], key, target);
+                    return this.wrap(target.state[key], key);
+                else if (key in target.getters)
+                    return this.wrap(target.getters[key].call(target.self))
                 else return undefined;
         }
     },
     set(target, key, value) {
+        if (key == 'self') return this.self = target.self = value
         if (key in this.methods) throw new Error(`${key} is read only`);
         target.state[key] = value;
         this.methods.trigger(target)(key);
     },
-    wrap(val, key, target) {
-        const store = new Proxy(target, this);
+    wrap(val, key) {
+        const store = this.self
         class Wrapper extends val.__proto__.constructor {
             constructor(arg) {
                 super(arg);
@@ -53,23 +56,18 @@ const handler = {
     methods: {
         watch: target => (key, fn) => {
             if (!target.watch[key]) target.watch[key] = new Set();
-            target.watch[key].add(fn);
+            target.watch[key].add(fn.bind(target.self));
             fn(target.state[key]);
             return () => target.watch[key].delete(fn);
         },
-        dispatch(target) {
-            return function(key, args) {
-                if (!(key in target.actions))
-                    throw new Error(`No Action with name ${key}`);
-                return target.actions[key](this, args);
-            };
+        dispatch: target => (key, args) => {
+            if (!(key in target.actions))
+                throw new Error(`No Action with name ${key}`);
+            return target.actions[key].call(target.self, args);
         },
-        trigger(target) {
-            return function(key) {
-                const value = target.state[key];
-                if (target.watch[key])
-                    target.watch[key].forEach(fn => fn(value));
-            };
+        trigger: target => key => {
+            if (target.watch[key])
+                target.watch[key].forEach(fn => fn.call(target.self, target.self[key]));
         },
     },
 };
@@ -80,6 +78,9 @@ class Store {
             state: {
                 ...store.state,
             },
+            getters: {
+                ...store.getters,
+            },
             watch: Object.entries(store.watch || {})
                 .map(([key, val]) => ({
                     [key]: new Set([val].flat(Infinity)),
@@ -89,8 +90,20 @@ class Store {
                 ...store.actions,
             },
         };
-        return new Proxy(store, handler);
+        const pro = new Proxy(store, handler)
+        return pro.self = pro;
     }
 }
 
-module.exports = Store;
+
+
+const test = new Store({
+    state: {
+        count: 0
+    }
+})
+
+console.log(test.count.store == test)
+
+
+// module.exports = Store;
