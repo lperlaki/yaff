@@ -9,8 +9,7 @@ const handler = {
     getOwnPropertyDescriptor(target, key) {
         if (key in target.getters) {
             return {
-                value: target.getters[key].call(target.self, target.self),
-                writable: true,
+                get: () => target.getters[key].call(target.self, target.self),
                 enumerable: true,
                 configurable: true
             }
@@ -24,7 +23,7 @@ const handler = {
         return Object.getPrototypeOf(target);
     },
     has(target, key) {
-        return key in target.state;
+        return key in target.state || key in target.getters;
     },
     get(target, key) {
         switch (key) {
@@ -49,22 +48,17 @@ const handler = {
         this.methods.trigger(target)(key);
     },
     wrap(val, key, target) {
-        if (!val.__proto__) {
-            return val
-        }
-        const store = target.self
+        if (!val.__proto__) return val
         class Wrapper extends val.__proto__.constructor {
             constructor(arg) {
                 super(arg);
             }
             get store() {
-                return store
+                return target.self
             }
-
             get key() {
                 return key
             }
-
             watch(fn) {
                 return this.store.watch(this.key, fn);
             }
@@ -75,7 +69,7 @@ const handler = {
         watch: target => (key, fn) => {
             if (!target.watch[key]) target.watch[key] = new Set();
             target.watch[key].add(fn.bind(target.self));
-            fn(target.self[key]);
+            fn.call(target.self, target.self[key]);
             return () => target.watch[key].delete(fn);
         },
         dispatch: target => (key, args) => {
@@ -90,8 +84,9 @@ const handler = {
     },
 };
 
-class Store {
+export class Store {
     constructor(store) {
+        this.self = new Proxy(this, handler)
         this.state = {
             ...store.state,
         }
@@ -106,26 +101,6 @@ class Store {
         this.actions = {
             ...store.actions,
         }
-        return this.self = new Proxy(this, handler)
+        return this.self
     }
 }
-
-
-
-
-const test = new Store({
-    state: {
-        count: 0
-    },
-    getters: {
-        countN: store => -store.count
-    }
-})
-
-test.count.watch(console.log)
-
-
-console.log(test)
-
-
-// module.exports = Store;
