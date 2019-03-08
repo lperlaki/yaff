@@ -12,7 +12,7 @@ const handler = {
         );
     },
     getPrototypeOf(target) {
-        return Store.prototype;
+        return Object.getPrototypeOf(target);
     },
     has(target, key) {
         return key in target.state;
@@ -27,9 +27,9 @@ const handler = {
                 return this.methods.trigger(target);
             default:
                 if (key in target.state)
-                    return this.wrap(target.state[key], key);
+                    return this.wrap(target.state[key], key, target);
                 else if (key in target.getters)
-                    return this.wrap(target.getters[key].call(target.self))
+                    return this.wrap(target.getters[key].call(target.self), key, target)
                 else return undefined;
         }
     },
@@ -39,14 +39,23 @@ const handler = {
         target.state[key] = value;
         this.methods.trigger(target)(key);
     },
-    wrap(val, key) {
-        const store = this.self
+    wrap(val, key, target) {
+        if (!val.__proto__) {
+            return val
+        }
+        const store = target.self
         class Wrapper extends val.__proto__.constructor {
             constructor(arg) {
                 super(arg);
-                this.store = store;
-                this.key = key;
             }
+            get store() {
+                return store
+            }
+
+            get key() {
+                return key
+            }
+
             watch(fn) {
                 return this.store.watch(this.key, fn);
             }
@@ -74,24 +83,24 @@ const handler = {
 
 class Store {
     constructor(store) {
-        store = {
-            state: {
-                ...store.state,
-            },
-            getters: {
-                ...store.getters,
-            },
-            watch: Object.entries(store.watch || {})
-                .map(([key, val]) => ({
-                    [key]: new Set([val].flat(Infinity)),
-                }))
-                .reduce((obj, val) => Object.assign(obj, val), {}),
-            actions: {
-                ...store.actions,
-            },
-        };
-        const pro = new Proxy(store, handler)
-        return pro.self = pro;
+
+        this.state = {
+            ...store.state,
+        }
+        this.getters = {
+            ...store.getters,
+        }
+        this.watch = Object.entries(store.watch || {})
+            .map(([key, val]) => ({
+                [key]: new Set([val].flat(Infinity)),
+            }))
+            .reduce((obj, val) => Object.assign(obj, val), {})
+        this.actions = {
+            ...store.actions,
+        }
+
+
+        return this.self = new Proxy(this, handler)
     }
 }
 
@@ -103,7 +112,10 @@ const test = new Store({
     }
 })
 
-console.log(test.count.store == test)
+test.count.watch(console.log)
+
+console.log(test)
+
 
 
 // module.exports = Store;
