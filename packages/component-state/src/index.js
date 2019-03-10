@@ -6,7 +6,7 @@ export class StateWrapper extends HTMLElement {
         if (this.watcher) this.watcher();
     }
     set state(state) {
-        if ('store' in state) {
+        if (typeof state == 'object' && 'store' in state) {
             this.stateref = state;
             this.watch()
         } else this.update(state)
@@ -48,10 +48,18 @@ export function define() {
         window.customElements.define('state-wrapper', StateWrapper);
 }
 
-export {
-    h
+
+export function h(s, ...v) {
+    const temp = document.createElement('template');
+    temp.innerHTML = s.join('<state-wrapper>');
+    const content = document.importNode(temp.content, true);
+    content.querySelectorAll('state-wrapper').forEach((el, i) => {
+        el.state = v[i]
+    })
+    return content
 }
-from './utils';
+
+
 
 if (window) {
     window.StateWrapper = StateWrapper;

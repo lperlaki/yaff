@@ -53,7 +53,7 @@ import {
     EventTarget
 } from "event-target-shim"
 
-export default class Store extends EventTarget {
+export class Store extends EventTarget {
     constructor(store) {
         super()
         this.self = new Proxy(this, handler)
@@ -105,7 +105,6 @@ export default class Store extends EventTarget {
     // }
 
     watch(key, infn) {
-
         const fn = ({
             detail
         }) => {
@@ -132,6 +131,8 @@ export default class Store extends EventTarget {
         }))
     }
 }
+
+export default Store;
 
 if (window) {
     window.Store = Store
