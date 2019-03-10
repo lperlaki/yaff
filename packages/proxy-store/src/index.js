@@ -79,7 +79,7 @@ export class Store extends EventTarget {
         const store = this.self
         class State extends val.__proto__.constructor {
             constructor(args) {
-                if (Array.prototype.isPrototypeOf(args))
+                if (Array.isArray(args))
                     super(...args, 0).pop()
                 else super(args);
             }
