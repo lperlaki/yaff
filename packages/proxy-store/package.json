@@ -1,0 +1,20 @@
+{
+  "name": "@yaff/store",
+  "author": "Liam Perlaki <lperlaki@icloud.com>",
+  "version": "1.1.0",
+  "main": "dist/store.js",
+  "license": "MIT",
+  "homepage": "https://github.com/lperlaki/yaff",
+  "repository": "git@github.com:lperlaki/yaff.git",
+  "scripts": {
+    "build": "webpack --mode production -o dist/store.js",
+    "pub": "yarn build; yarn publish --access=public"
+  },
+  "devDependencies": {
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  },
+  "dependencies": {
+    "event-target-shim": "^5.0.1"
+  }
+}
