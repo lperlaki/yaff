@@ -3,6 +3,7 @@ const handler = {
         return [
             ...Reflect.ownKeys(target.state),
             ...Reflect.ownKeys(target.getters),
+            ...Reflect.ownKeys(target.actions),
         ];
     },
     getOwnPropertyDescriptor(target, key) {
@@ -14,7 +15,8 @@ const handler = {
             }
         }
         return (
-            Reflect.getOwnPropertyDescriptor(target.state, key)
+            Reflect.getOwnPropertyDescriptor(target.state, key) ||
+            Reflect.getOwnPropertyDescriptor(target.actions, key)
         );
     },
     getPrototypeOf(target) {
@@ -36,6 +38,8 @@ const handler = {
                     return target.wrap(target.state[key], key, target);
                 else if (key in target.getters)
                     return this.wrap(target.getters[key].call(target.self, target.self), key, target)
+                else if (key in target.actions)
+                    return target.actions[key].bind(target.self)
                 else return undefined;
         }
     },
@@ -99,13 +103,6 @@ export class Store extends EventTarget {
         return new State(val);
     }
 
-    // watch(key, fn) {
-    //     if (!this.watchers[key]) this.watchers[key] = new Set();
-    //     this.watchers[key].add(fn.bind(this.self));
-    //     fn.call(this.self, this.self[key]);
-    //     return () => this.watchers[key].delete(fn);
-    // }
-
     watch(key, infn) {
         const fn = ({
             detail
@@ -113,6 +110,9 @@ export class Store extends EventTarget {
             infn.call(this.self, detail)
         }
         this.addEventListener(key, fn)
+        fn({
+            detail: this.self[key]
+        })
         return () => this.removeEventListener(key, fn)
     }
 
@@ -121,11 +121,6 @@ export class Store extends EventTarget {
             throw new Error(`No Action with name ${key}`);
         return this.actions[key].call(this.self, args);
     }
-
-    // trigger(key) {
-    //     if (this.watchers[key])
-    //         this.watchers[key].forEach(fn => fn.call(this.self, this.self[key]));
-    // }
 
     trigger(key) {
         this.dispatchEvent(new CustomEvent(key, {
