@@ -1,5 +1,5 @@
 {
-  "name": "formax",
+  "name": "@yaff/formax",
   "version": "1.0.6",
   "description": "Submit Form Using Ajax",
   "main": "dist/main.js",
@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "webpack --mode production",
-    "pub": "yarn build; yarn publish"
+    "pub": "yarn build; yarn publish --access=public"
   },
   "keywords": [
     "ajax",

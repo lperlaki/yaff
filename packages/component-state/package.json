@@ -1,0 +1,17 @@
+{
+  "name": "@yaff/component-state",
+  "author": "Liam Perlaki <lperlaki@icloud.com>",
+  "version": "1.0.1",
+  "main": "dist/store.js",
+  "license": "MIT",
+  "homepage": "https://github.com/lperlaki/yaff",
+  "repository": "git@github.com:lperlaki/yaff.git",
+  "scripts": {
+    "build": "webpack --mode production -o dist/component-state.js",
+    "pub": "yarn build; yarn publish --access=public"
+  },
+  "devDependencies": {
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  }
+}
