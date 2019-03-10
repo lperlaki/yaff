@@ -48,12 +48,13 @@ export function define() {
         window.customElements.define('state-wrapper', StateWrapper);
 }
 
+const wrapper = 'state-wrapper'
 
 export function h(s, ...v) {
     const temp = document.createElement('template');
-    temp.innerHTML = s.join('<state-wrapper>');
+    temp.innerHTML = s.join(['<', '></', '>'].join(wrapper));
     const content = document.importNode(temp.content, true);
-    content.querySelectorAll('state-wrapper').forEach((el, i) => {
+    content.querySelectorAll(wrapper).forEach((el, i) => {
         el.state = v[i]
     })
     return content

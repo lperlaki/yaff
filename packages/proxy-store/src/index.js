@@ -78,9 +78,6 @@ export class Store extends EventTarget {
         if (!val.__proto__) return val
         const store = this.self
         class Wrapper extends val.__proto__.constructor {
-            constructor(arg) {
-                super(arg);
-            }
             get value() {
                 return this.valueOf()
             }
