@@ -55,7 +55,9 @@ export function h(s, ...v) {
     temp.innerHTML = s.join(['<', '></', '>'].join(wrapper));
     const content = document.importNode(temp.content, true);
     content.querySelectorAll(wrapper).forEach((el, i) => {
-        el.state = v[i]
+        if (DocumentFragment.prototype.isPrototypeOf(v[i])) el.replaceWith(v[i])
+        else if (Array.prototype.isPrototypeOf(v[i]) && DocumentFragment.prototype.isPrototypeOf(v[i][0])) el.replaceWith(...v[i])
+        else el.state = v[i]
     })
     return content
 }

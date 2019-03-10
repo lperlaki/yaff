@@ -77,7 +77,12 @@ export class Store extends EventTarget {
     wrap(val, key) {
         if (!val.__proto__) return val
         const store = this.self
-        class Wrapper extends val.__proto__.constructor {
+        class State extends val.__proto__.constructor {
+            constructor(args) {
+                if (Array.prototype.isPrototypeOf(args))
+                    super(...args, 0).pop()
+                else super(args);
+            }
             get value() {
                 return this.valueOf()
             }
@@ -91,7 +96,7 @@ export class Store extends EventTarget {
                 return this.store.watch(this.key, fn);
             }
         }
-        return new Wrapper(val);
+        return new State(val);
     }
 
     // watch(key, fn) {
