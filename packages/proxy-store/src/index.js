@@ -33,6 +33,10 @@ const handler = {
                 return target.dispatch.bind(target);
             case 'trigger':
                 return target.trigger.bind(target);
+            case 'save':
+                return target.save.bind(target);
+            case 'load':
+                return target.load.bind(target);
             default:
                 if (key in target.state)
                     return target.wrap(target.state[key], key, target);
@@ -126,6 +130,15 @@ export class Store extends EventTarget {
         this.dispatchEvent(new CustomEvent(key, {
             detail: this.self[key]
         }))
+    }
+
+    save(key = 'store') {
+        localStorage.setItem(key, JSON.stringify(this.state))
+    }
+
+    load(key = 'store') {
+        this.state = JSON.parse(localStorage.getItem(key))
+        for (let key in this.state) this.trigger(key)
     }
 }
 
