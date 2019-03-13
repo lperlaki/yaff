@@ -1,0 +1,11 @@
+[package]
+name = "rust-store"
+version = "0.1.0"
+authors = ["Liam Perlaki <lperlaki@icloud.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen="0.2.38"

@@ -41,7 +41,7 @@ const handler = {
                 if (key in target.state)
                     return target.wrap(target.state[key], key, target);
                 else if (key in target.getters)
-                    return this.wrap(target.getters[key].call(target.self, target.self), key, target)
+                    return target.wrap(target.getters[key].call(target.self, target.self), key, target)
                 else if (key in target.actions)
                     return target.actions[key].bind(target.self)
                 else return undefined;

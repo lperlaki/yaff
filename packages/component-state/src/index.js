@@ -73,8 +73,7 @@ function* elementsGenerator(content) {
         }
     }
 }
-
-
+'<div> Hello<state-wrapper></state-wrapper><p id="state-wrapper"> World</p></div>'
 export function h(s, ...v) {
     const temp = document.createElement('template');
     let sum = '';
@@ -83,9 +82,8 @@ export function h(s, ...v) {
     const elements = elementsGenerator(content);
     for (let val of v) {
         let el = elements.next().value;
-        if (Attr.prototype.isPrototypeOf(el)) {
-            bindAttr(el, val)
-        } else {
+        if (Attr.prototype.isPrototypeOf(el)) bindAttr(el, val)
+        else {
             if (DocumentFragment.prototype.isPrototypeOf(val)) el.replaceWith(val)
             else if (Array.prototype.isPrototypeOf(val) && DocumentFragment.prototype.isPrototypeOf(val[0])) el.replaceWith(...val)
             else el.state = val
