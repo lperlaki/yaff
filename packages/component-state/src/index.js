@@ -62,26 +62,38 @@ const exp = document.createExpression('//state-wrapper | //*[@*="state-wrapper"]
 
 const bindAttr = (attr, state) => (typeof state == 'object' && 'store' in state) ? state.watch(v => attr.value = v) : attr.value = state
 
-
-export function h(s, ...v) {
-    const temp = document.createElement('template');
-    temp.innerHTML = s.map((e, i) => `${e}${i in v && reg.test(e) && (reg.exec(e)[0] == '>' ? wrapper_tag : wrapper) || ''}`).join('');
-    const content = document.importNode(temp.content, true);
-
+function* elementsGenerator(content) {
     const elements = exp.evaluate(content.firstChild, 7)
     for (let i = 0; i < elements.snapshotLength; i++) {
         let el = elements.snapshotItem(i);
-        let val = v[i]
         if (swelm(el)) {
+            yield el;
+        } else {
+            yield* attrib(el)
+        }
+    }
+}
+
+
+export function h(s, ...v) {
+    const temp = document.createElement('template');
+    let sum = '';
+    temp.innerHTML = s.map((e, i) => `${e}${i in v && reg.test(sum += e) && (reg.exec(sum)[0] == '>' ? wrapper_tag : wrapper) || ''}`).join('');
+    const content = document.importNode(temp.content, true);
+    const elements = elementsGenerator(content);
+    for (let val of v) {
+        let el = elements.next().value;
+        if (Attr.prototype.isPrototypeOf(el)) {
+            bindAttr(el, val)
+        } else {
             if (DocumentFragment.prototype.isPrototypeOf(val)) el.replaceWith(val)
             else if (Array.prototype.isPrototypeOf(val) && DocumentFragment.prototype.isPrototypeOf(val[0])) el.replaceWith(...val)
             else el.state = val
-        } else {
-            attrib(el).forEach(a => bindAttr(a, val))
         }
     }
     return content;
 }
+
 
 
 
