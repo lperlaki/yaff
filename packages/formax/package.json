@@ -4,7 +4,7 @@
   "description": "Submit Form Using Ajax",
   "main": "dist/main.js",
   "repository": "git@github.com:lperlaki/formax.git",
-  "homepage": "https://github.com/lperlaki/formax",
+  "homepage": "https://github.com/lperlaki/yaff",
   "author": "Liam Perlaki <lperlaki@icloud.com>",
   "license": "MIT",
   "devDependencies": {
