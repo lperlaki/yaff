@@ -2,9 +2,16 @@
 
 A Proxy based state Manager.
 
+```sh
+yarn add @yaff/store
+npm i @yaff/store
+```
+
 ## Simple Usage
 
 ```js
+import { Store } from '@yaff/store';
+
 // Initialise the Store
 
 const store = new Store({
@@ -77,4 +84,30 @@ store.increment();
 // store.increment(args) == store.dispatch('increment', args)
 
 console.assert(store.count == 1);
+```
+
+## Arrays
+
+Currently only inmutable arrays are suported
+
+```js
+const store = new Store({
+    state: {
+        items: [],
+    },
+    actions: {
+        remove(index) {
+            // [...] Currently needed to create a copy
+            this.items = [...this.items.filter((_, i) => i != index)];
+        },
+    },
+});
+
+// add 3 elements to items
+store.items = [...store.items, 1, 3, 5];
+
+// use actions to simplify code
+store.remove(0);
+
+console.assert(store.items == [3, 5]);
 ```
