@@ -1,7 +1,7 @@
 {
   "name": "@yaff/store",
   "author": "Liam Perlaki <lperlaki@icloud.com>",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "src/index.js",
   "license": "MIT",
   "homepage": "https://github.com/lperlaki/yaff",
