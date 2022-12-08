@@ -6,7 +6,7 @@
   "author": "Liam Perlaki <lperlaki@icloud.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "markdown": "^0.5.0"
   },
   "scripts": {
